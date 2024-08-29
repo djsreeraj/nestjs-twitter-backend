@@ -1,3 +1,4 @@
+//src/guards/auth.guard.ts
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { FirebaseAdmin } from "config/firebase.setup";

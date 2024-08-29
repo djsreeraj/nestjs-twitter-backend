@@ -1,17 +1,26 @@
+// user/user.setvice.ts
+import { FirebaseAdmin } from './../../config/firebase.setup';
 import { Injectable, BadRequestException } from "@nestjs/common";
-import { FirebaseAdmin } from "../../config/firebase.setup";
 import { UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entity/user.entity";
 import { Repository } from "typeorm";
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
+    private firebaseApiKey: string;
+
     constructor(
         private readonly admin: FirebaseAdmin,
+        private configService: ConfigService,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-    ) {}
+    ) {
+        this.firebaseApiKey = this.configService.get<string>('FIREBASE_API_KEY');
+
+    }
 
     async createUser(userRequest: UserDto): Promise<any> {
         const { email, password, firstName, lastName, role } = userRequest;
@@ -44,6 +53,20 @@ export class UserService {
             return createdUser;
         } catch (error) {
             throw new BadRequestException(error.message);
+        }
+    }
+
+    async signInUser(email: string, password: string): Promise<any> {
+        try {
+            const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
+            const response = await axios.post(url, {
+                email,
+                password,
+                returnSecureToken: true
+            });
+            return response.data; // Includes ID token, refresh token, etc.
+        } catch (error) {
+            throw new BadRequestException('Authentication failed: ' + error.message);
         }
     }
 }
