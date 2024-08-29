@@ -1,4 +1,4 @@
-// user/user.setvice.ts
+// user/user.service.ts
 import { FirebaseAdmin } from './../../config/firebase.setup';
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { UserDto } from "./user.dto";
@@ -67,6 +67,22 @@ export class UserService {
             return response.data; // Includes ID token, refresh token, etc.
         } catch (error) {
             throw new BadRequestException('Authentication failed: ' + error.message);
+        }
+    }
+
+    async getUserProfile(uid: string): Promise<User> {
+        try {
+            const user = await this.userRepository.findOne({
+                where: { uid: uid }
+            });
+            
+            if (!user) {
+                throw new BadRequestException('User does not exist');
+            }
+            
+            return user;
+        } catch (error) {
+            throw new BadRequestException('Failed to get user profile: ' + error.message);
         }
     }
 }
