@@ -1,7 +1,9 @@
 //user.enity.ts
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../user.dto';
+import { TweetLike } from 'src/tweet/entities/tweet-like.entity';
+import { Tweet } from 'src/tweet/entities/tweet.entity';
 
 @Entity('users')
 export class User {
@@ -32,4 +34,10 @@ export class User {
     })
     @ApiProperty({ enum: Role, description: 'The role of the user', example: Role.USER, default: Role.USER, enumName: 'Role' })
     role: Role;
+
+    @OneToMany(() => Tweet, tweet => tweet.user)
+    tweets: Tweet[];
+
+    @OneToMany(() => TweetLike, tweetLike => tweetLike.user)
+    likes: TweetLike[];
 }

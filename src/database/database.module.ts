@@ -1,3 +1,4 @@
+//database/database.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -16,6 +17,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         synchronize: true, // TODO: set to false in production
+        migrations: [__dirname + '/../migrations/**/*{.ts,.js}'], 
+        migrationsRun: false, // Whether migrations should automatically run on app start
+        cli: {
+          migrationsDir: 'src/migrations',
+        },
       }),
       inject: [ConfigService],
     }),
