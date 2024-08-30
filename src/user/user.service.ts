@@ -1,7 +1,7 @@
 // user/user.service.ts
 import { FirebaseAdmin } from './../../config/firebase.setup';
 import { Injectable, BadRequestException } from "@nestjs/common";
-import { UserDto } from "./user.dto";
+import { LoginDto, UserDto } from "./user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entity/user.entity";
 import { Repository } from "typeorm";
@@ -56,7 +56,8 @@ export class UserService {
         }
     }
 
-    async signInUser(email: string, password: string): Promise<any> {
+    async signInUser(loginRequest: LoginDto): Promise<any> {
+        const { email, password } = loginRequest;
         try {
             const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
             const response = await axios.post(url, {
