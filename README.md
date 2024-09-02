@@ -43,7 +43,7 @@ POSTGRES_HOST=localhost
 FIREBASE_API_KEY= your_key
 
 ````
-Add FIREBASE_API_KEY and db details .
+Add **FIREBASE_API_KEY** and db details .
 
 
 ## Installation
@@ -54,6 +54,14 @@ Run the below command to install dependencies and docker container:
 yarn install
 
 docker-compose up -d
+
+````
+
+Run migrations:
+
+```bash
+npm run migration:run
+
 ````
 
 
@@ -73,3 +81,5 @@ Run the above command  to start the app.
 **App:** https://localhost:3000
 
 **API Docs:**  https://localhost:3000/api-docs
+
+
