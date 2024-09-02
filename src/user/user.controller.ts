@@ -4,7 +4,7 @@ import { UserService } from "./user.service";
 import { LoginDto, UserDto } from "./user.dto";
 import { Auth } from "src/decorators/auth.decorator";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { User } from "./entity/user.entity";
+import { User } from "./entities/user.entity";
 
 @ApiTags('User')
 @Controller("user")

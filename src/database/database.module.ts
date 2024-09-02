@@ -15,9 +15,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        synchronize: true, // TODO: set to false in production
-        migrations: [__dirname + '/../migrations/**/*{.ts,.js}'], 
+        entities: [__dirname + "/**/*.entity{.ts,.js}"],
+        synchronize: false, // TODO: set to false in production
+        migrations: [__dirname + '/../migrations/*{.ts,.js}'], 
         migrationsRun: false, // Whether migrations should automatically run on app start
         cli: {
           migrationsDir: 'src/migrations',

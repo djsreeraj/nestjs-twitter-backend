@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTweetDto } from './dto/create-tweet.dto';
 import { ReTweetDto } from './dto/retweet.dto';
-import { User } from 'src/user/entity/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Tweet } from './entities/tweet.entity';
 import { TweetLike } from './entities/tweet-like.entity';
 import { CreateTweetLikeDto } from './dto/tweet-like.dto';

@@ -1,4 +1,4 @@
-import { User } from "src/user/entity/user.entity";
+import { User } from "src/user/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TweetLike } from "./tweet-like.entity";
 
