@@ -14,10 +14,4 @@ export class CreateTweetDto {
   @MaxLength(280)
   content: string;
 
-  @ApiProperty({
-    description: 'The ID of the user creating the tweet',
-    example: '9876543210',
-  })
-  @IsNotEmpty()
-  userId: string;
 }

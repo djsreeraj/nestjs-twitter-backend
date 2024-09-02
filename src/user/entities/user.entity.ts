@@ -1,5 +1,5 @@
 //user.enity.ts
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../user.dto';
 import { TweetLike } from 'src/tweet/entities/tweet-like.entity';
@@ -40,4 +40,15 @@ export class User {
 
     @OneToMany(() => TweetLike, tweetLike => tweetLike.user)
     likes: TweetLike[];
+
+    @ManyToMany(() => User, user => user.following)
+    @JoinTable({
+        name: 'user_followers',
+        joinColumn: { name: 'user_id', referencedColumnName: 'uid' },
+        inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'uid' },
+    })
+    followers: User[];
+
+    @ManyToMany(() => User, user => user.followers)
+    following: User[];
 }

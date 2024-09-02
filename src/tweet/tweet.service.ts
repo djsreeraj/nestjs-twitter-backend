@@ -20,8 +20,8 @@ export class TweetService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  async create(createTweetDto: CreateTweetDto): Promise<Tweet> {
-    const user = await this.userRepository.findOne({ where: { uid: createTweetDto.userId } });
+  async create(createTweetDto: CreateTweetDto, uid: string): Promise<Tweet> {
+    const user = await this.userRepository.findOne({ where: { uid : uid} });
     if (!user) {
       throw new BadRequestException('User does not exist');
     }
