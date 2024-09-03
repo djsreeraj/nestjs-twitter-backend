@@ -1,10 +1,8 @@
 // tweet/tweet.controller.ts
 import { Controller, Get, Post, Body, Param, Delete, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { TweetService } from './tweet.service';
 import { CreateTweetDto } from './dto/create-tweet.dto';
-import { ReTweetDto } from './dto/retweet.dto';
-import { CreateTweetLikeDto } from './dto/tweet-like.dto';
 import { Auth } from 'src/decorators/auth.decorator';
 
 @ApiTags('tweets')
@@ -38,23 +36,31 @@ export class TweetController {
   @Post(':id/retweet')
   @ApiBearerAuth('access-token')
   @Auth('USER')
-  retweet(@Param('id') tweetId: string, @Body() retweetDto: ReTweetDto) {
-    return this.tweetService.retweet(+tweetId, retweetDto);
+  @ApiResponse({ status: 201, description: 'Tweet Retweeted Successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  retweet(@Param('id') tweetId: string, @Request() req) {
+    return this.tweetService.retweet(+tweetId, req.user.uid);
   }
 
   @ApiOperation({ summary: 'Like a tweet' })
   @Post(':id/like')
   @ApiBearerAuth('access-token')
   @Auth('USER')
-  like(@Param('id') tweetId: string, @Body() createTweetLikeDto: CreateTweetLikeDto) {
-    return this.tweetService.like(+tweetId, createTweetLikeDto);
+  @ApiResponse({ status: 201, description: 'Tweet Liked Successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  like(@Param('id') tweetId: string,  @Request() req) {
+    return this.tweetService.like(+tweetId, req.user.uid);
   }
 
   @ApiOperation({ summary: 'Delete a tweet' })
   @Delete(':id')
   @ApiBearerAuth('access-token')
   @Auth('USER')
-  remove(@Param('id') id: string) {
-    return this.tweetService.remove(+id);
+  @ApiResponse({ status: 200, description: 'Tweet successfully deleted.' })
+  @ApiUnauthorizedResponse({ description: 'You do not have permission to delete this tweet.' })
+  @ApiNotFoundResponse({ description: 'Tweet not found.' })
+  async remove(@Param('id') id: string,  @Request() req) {
+    await this.tweetService.remove(+id, req.user.uid);
+    return { message: 'Tweet deleted successfully' };
   }
 }

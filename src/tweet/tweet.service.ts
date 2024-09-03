@@ -1,5 +1,5 @@
 // tweet/tweet.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTweetDto } from './dto/create-tweet.dto';
@@ -42,15 +42,34 @@ export class TweetService {
     return tweet;
   }
 
-  async retweet(tweetId: number, retweetDto: ReTweetDto): Promise<Tweet> {
-    const originalTweet = await this.findOne(tweetId);  // Reuses findOne to handle not found exception
-    const retweet = this.tweetRepository.create({ ...retweetDto, originalTweet });
+  async retweet(tweetId: number, uid: string): Promise<Tweet> {
+    const originalTweet = await this.tweetRepository.findOne({
+      where: { id: tweetId },
+      relations: ['user'] 
+    });
+  
+    if (!originalTweet) {
+      throw new BadRequestException('Original tweet not found');
+    }
+  
+    const user = await this.userRepository.findOne({ where: { uid } });
+    if (!user) {
+      throw new BadRequestException('User does not exist');
+    }
+  
+    // Create a new tweet as a retweet
+    const retweet = this.tweetRepository.create({
+      content: originalTweet.content, 
+      user,
+      originalTweet 
+    });
+  
     return this.tweetRepository.save(retweet);
   }
 
-  async like(tweetId: number, createTweetLikeDto: CreateTweetLikeDto): Promise<TweetLike> {
+  async like(tweetId: number, uid: string): Promise<TweetLike> {
     const tweet = await this.findOne(tweetId);  // Ensure the tweet exists
-    const user = await this.userRepository.findOne({ where: { uid: createTweetLikeDto.userId } });
+    const user = await this.userRepository.findOne({ where: { uid } });
     if (!user) {
       throw new BadRequestException('User does not exist');
     }
@@ -59,8 +78,20 @@ export class TweetService {
     return this.tweetLikeRepository.save(like);
   }
 
-  async remove(id: number): Promise<void> {
-    const tweet = await this.findOne(id); 
+  async remove(id: number, uid: string): Promise<void> {
+    const tweet = await this.tweetRepository.findOne({
+      where: { id },
+      relations: ['user'], 
+    });
+  
+    if (!tweet) {
+      throw new NotFoundException('Tweet not found');
+    }
+  
+    if (tweet.user.uid !== uid) {
+      throw new UnauthorizedException('You do not have permission to delete this tweet');
+    }
+  
     await this.tweetRepository.remove(tweet);
   }
 }
